@@ -1,0 +1,21 @@
+# Build output
+target/
+*.class
+
+# Maven wrapper jar (optional, keep if you want reproducible builds)
+# .mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Packaged archives (duplicates of source already tracked)
+*.zip
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
