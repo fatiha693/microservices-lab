@@ -1,0 +1,226 @@
+{
+  "info": {
+    "name": "Microservices Lab",
+    "description": "Employee, Customer, Product, Order services + Eureka service-registry + api-gateway. Direct-port requests hit each service on its own port; the \"Via API Gateway\" folder hits everything through :8080. Create requests auto-save the returned id into a collection variable so the matching Get-by-id request works with no manual copy-pasting.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "employeeBase", "value": "http://localhost:9001" },
+    { "key": "customerBase", "value": "http://localhost:9002" },
+    { "key": "productBase", "value": "http://localhost:9003" },
+    { "key": "orderBase", "value": "http://localhost:9004" },
+    { "key": "gatewayBase", "value": "http://localhost:8080" },
+    { "key": "eurekaBase", "value": "http://localhost:8761" },
+    { "key": "employeeId", "value": "" },
+    { "key": "customerId", "value": "" },
+    { "key": "productId", "value": "" },
+    { "key": "orderId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "0. Eureka",
+      "item": [
+        {
+          "name": "List registered apps",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{eurekaBase}}/eureka/apps", "host": ["{{eurekaBase}}"], "path": ["eureka", "apps"] },
+            "description": "Confirms which services are currently registered with the Eureka dashboard, as JSON instead of the HTML dashboard."
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Employee Service (direct :9001)",
+      "item": [
+        {
+          "name": "Create Employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    pm.collectionVariables.set(\"employeeId\", body.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sara\",\n  \"designation\": \"Engineer\",\n  \"salary\": 50000\n}"
+            },
+            "url": { "raw": "{{employeeBase}}/employees/", "host": ["{{employeeBase}}"], "path": ["employees", ""] }
+          }
+        },
+        {
+          "name": "Get Employee By Id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{employeeBase}}/employees/{{employeeId}}", "host": ["{{employeeBase}}"], "path": ["employees", "{{employeeId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Customer Service (direct :9002)",
+      "item": [
+        {
+          "name": "Create Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    pm.collectionVariables.set(\"customerId\", body.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ali\",\n  \"address\": \"123 Main St\",\n  \"age\": 25\n}"
+            },
+            "url": { "raw": "{{customerBase}}/customers/", "host": ["{{customerBase}}"], "path": ["customers", ""] }
+          }
+        },
+        {
+          "name": "Get Customer By Id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{customerBase}}/customers/{{customerId}}", "host": ["{{customerBase}}"], "path": ["customers", "{{customerId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Product Service (direct :9003)",
+      "item": [
+        {
+          "name": "Create Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    pm.collectionVariables.set(\"productId\", body.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Notebook\",\n  \"description\": \"200-page ruled\",\n  \"price\": 3.50\n}"
+            },
+            "url": { "raw": "{{productBase}}/products/", "host": ["{{productBase}}"], "path": ["products", ""] }
+          }
+        },
+        {
+          "name": "Get Product By Id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{productBase}}/products/{{productId}}", "host": ["{{productBase}}"], "path": ["products", "{{productId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Order Service (direct :9004)",
+      "item": [
+        {
+          "name": "Create Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () { pm.response.to.have.status(200); });",
+                  "if (pm.response.code === 200) {",
+                  "    var body = pm.response.json();",
+                  "    pm.collectionVariables.set(\"orderId\", body.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"productId\": \"{{productId}}\",\n  \"employeeId\": \"{{employeeId}}\",\n  \"quantity\": 2,\n  \"date\": \"2026-08-03\"\n}"
+            },
+            "url": { "raw": "{{orderBase}}/orders/", "host": ["{{orderBase}}"], "path": ["orders", ""] },
+            "description": "Run the Employee/Customer/Product create requests first so their ids are filled in automatically here."
+          }
+        },
+        {
+          "name": "Get Order By Id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{orderBase}}/orders/{{orderId}}", "host": ["{{orderBase}}"], "path": ["orders", "{{orderId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Via API Gateway (:8080)",
+      "item": [
+        {
+          "name": "Get Employee via Gateway",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{gatewayBase}}/employees/{{employeeId}}", "host": ["{{gatewayBase}}"], "path": ["employees", "{{employeeId}}"] }
+          }
+        },
+        {
+          "name": "Get Customer via Gateway",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{gatewayBase}}/customers/{{customerId}}", "host": ["{{gatewayBase}}"], "path": ["customers", "{{customerId}}"] }
+          }
+        },
+        {
+          "name": "Get Product via Gateway",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{gatewayBase}}/products/{{productId}}", "host": ["{{gatewayBase}}"], "path": ["products", "{{productId}}"] }
+          }
+        },
+        {
+          "name": "Get Order via Gateway (expected 404 - not routed)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{gatewayBase}}/orders/{{orderId}}", "host": ["{{gatewayBase}}"], "path": ["orders", "{{orderId}}"] }
+          },
+          "description": "The lab manual's gateway routes only cover employees/customers/products. order-service has no route defined, so this returns 404 until that route is added."
+        }
+      ]
+    }
+  ]
+}
